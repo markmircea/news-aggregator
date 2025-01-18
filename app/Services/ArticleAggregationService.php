@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Article;
-use App\Services\News\NewsServiceInterface;
 use Illuminate\Support\Facades\Log;
 
 class ArticleAggregationService
@@ -20,7 +19,8 @@ class ArticleAggregationService
         $stats = [
             'total_fetched' => 0,
             'total_new' => 0,
-            'errors' => 0
+            'errors' => 0,
+            'database_total' => 0
         ];
 
         foreach ($this->newsServices as $service) {
@@ -40,6 +40,9 @@ class ArticleAggregationService
             }
         }
 
+        // Get total count from database
+        $stats['database_total'] = Article::count();
+
         return $stats;
     }
 
@@ -47,7 +50,7 @@ class ArticleAggregationService
     {
         try {
             $created = Article::updateOrCreate(
-                ['url' => $articleData['url']],  // URL as unique identifier
+                ['url' => $articleData['url']],
                 $articleData
             );
 

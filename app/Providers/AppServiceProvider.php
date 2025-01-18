@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\Services\ArticleAggregationService;
 use App\Services\News\GuardianService;
 use App\Services\News\NewsApiService;
+use App\Services\News\NYTimesService;
+
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
             return new ArticleAggregationService([
                 new GuardianService(),
                 new NewsApiService(),
+                new NYTimesService()
             ]);
         });
     }

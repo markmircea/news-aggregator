@@ -24,12 +24,13 @@ class FetchLatestArticles extends Command
 
         $stats = $this->aggregationService->aggregateLatestArticles();
 
-        $this->info("Fetching completed:");
+        $this->info('Fetching completed:');
         $this->table(
             ['Metric', 'Value'],
             [
-                ['Total Fetched', $stats['total_fetched']],
-                ['New Articles', $stats['total_new']],
+                ['Articles From APIs', $stats['total_fetched']],
+                ['New Articles Added', $stats['total_new']],
+                ['Total Articles in Database', $stats['database_total']],
                 ['Errors', $stats['errors']]
             ]
         );
