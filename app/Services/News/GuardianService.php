@@ -23,7 +23,7 @@ class GuardianService implements NewsServiceInterface
                 'show-fields' => 'all',
                 'page-size' => 50,
                 'order-by' => 'newest',
-                'from-date' => now()->subDay()->format('Y-m-d'),  // Last 24 hours
+                'from-date' => now()->subDay()->format('Y-m-d'),  //last 24 hours
                 'to-date' => now()->format('Y-m-d')
             ]);
 

@@ -22,7 +22,7 @@ class NewsApiService implements NewsServiceInterface
                 'apiKey' => $this->apiKey,
                 'language' => 'en',
                 'pageSize' => 50,
-                'from' => now()->subDay()->format('Y-m-d\TH:i:s\Z'),  // Last 24 hours
+                'from' => now()->subDay()->format('Y-m-d\TH:i:s\Z'),  // last 24
                 'to' => now()->format('Y-m-d\TH:i:s\Z')
             ]);
 
@@ -48,8 +48,8 @@ class NewsApiService implements NewsServiceInterface
                 'title' => $article['title'],
                 'description' => $article['description'],
                 'content' => $article['content'],
-                'source_name' => $article['source']['name'] ?? 'NewsAPI',
-                'source_id' => $article['source']['id'] ?? null,
+                'source_name' => 'NewsAPI',
+                'source_id' => $article['source']['name'] ?? 'NewsAPI',
                 'author' => $article['author'],
                 'url' => $article['url'],
                 'image_url' => $article['urlToImage'] ?? null,

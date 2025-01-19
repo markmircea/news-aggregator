@@ -1,66 +1,144 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Laravel v10 (Just because I like the kernal :) 
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+first run the server
+- php artisan serve
 
-## About Laravel
+start the redis server
+-docker compose up
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+start the scheduler with a cron job
+- php artisan schedule:run
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+to get latest articles manually ->
+- php artisan articles:fetch-latest
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+gets latest for last 24 hours, ignores duplicates, invalidates cache
 
-## Learning Laravel
+to manually clear redis cache
+- php artisan articles:clear-cache
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+a. Get All Articles:
+Method: GET
+URL: http://127.0.0.1:8000/api/v1/articles
 
-## Laravel Sponsors
+b. Search Articles:
+Method: GET
+URL: http://127.0.0.1:8000/api/v1/articles/search?q=technology
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+c. Filtered Articles:
+Method: GET
+URL: http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology
 
-### Premium Partners
+d. Get Categories:
+Method: GET
+URL: http://127.0.0.1:8000/api/v1/categories
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+e. Get Sources:
+Method: GET
+URL: http://127.0.0.1:8000/api/v1/sources
 
-## Contributing
+f. Get Authors:
+Method: GET
+URL: http://127.0.0.1:8000/api/v1/authors
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Example with filters (when using authors aas a filter, use the key 'author', sane for the rest, drop the 'S'):
+Method: GET
+URL: http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology&from_date=2024-01-16&to_date=2025-01-17&per_page=10
 
-## Code of Conduct
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-## Security Vulnerabilities
+MODIFIED FILES FROM ORIGINAL
+news-aggregator/
+│
+├── .env
+│   # Environment file containing API keys:
+│   # GUARDIAN_API_KEY, NEWSAPI_KEY, NYTIMES_API_KEY
+│   # Database configuration (SQLite)
+│   # Added Redis configuration:
+│   # REDIS_CLIENT=predis
+│
+├── app/
+│   ├── Console/
+│   │   ├── Commands/
+│   │   │   ├── FetchLatestArticles.php
+│   │   │   |    # Artisan command that runs the article fetching process
+│   │   │   |    # Usage: php artisan articles:fetch-latest
+│   │   │   └── ClearArticlesCache.php
+|   |   |        # Clears the articles from redis with php artisan articles:clear-cache
+|   |   |
+│   │   └── Kernel.php
+│   │       # Schedules the automatic fetching of articles every hour
+│   │
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── API/
+│   │           └── ArticleController.php
+│   │               # Handles API endpoints for:
+│   │               # - Getting articles with filters
+│   │               # - Searching articles
+│   │               # - Getting categories, sources, authors
+│   │
+│   ├── Models/
+│   │   └── Article.php
+│   │       # Database model for articles
+│   │       # Defines fillable fields and relationships
+│   │
+│   ├── Providers/
+│   │   └── AppServiceProvider.php
+│   │       # Registers news services in the Laravel container
+│   │       # Configures service dependencies
+│   │
+│   └── Services/
+│       ├── News/
+│       │   ├── NewsServiceInterface.php
+│       │   │   # Interface that defines how news services should work
+│       │   │
+│       │   ├── GuardianService.php
+│       │   │   # Fetches articles from The Guardian API
+│       │   │
+│       │   ├── NewsApiService.php
+│       │   │   # Fetches articles from NewsAPI
+│       │   │
+│       │   └── NYTimesService.php
+│       │       # Fetches articles from NYTimes API (both top stories and search)
+│       │
+│       ├── ArticleAggregationService.php
+│       |    # Coordinates fetching from all news sources
+│       |    # Handles storing articles and avoiding duplicates
+|       │
+│       └── CacheService.php
+│           # Caches the requests that are made for 24 hours so any subsequent requests go through redis
+│           # Handles all Redis caching operations
+│           # Manages cache keys and TTL
+│           # Provides methods for cache invalidation
+│           
+│
+├── config/
+|   |
+|   |
+|   ├── database.php # added redis caching
+│   | 
+│   └── services.php
+│       # Configuration file containing news API settings
+│       # Stores API keys and endpoints configurations
+│
+├── database/
+│   └── migrations/
+│       └── [timestamp]_create_articles_table.php
+│           # Creates the articles table with necessary fields:
+│           # title, description, source, url, etc.
+│
+└── routes/
+    └── api.php
+        # Defines API routes for accessing articles:
+        # GET /api/v1/articles
+        # GET /api/v1/articles/search
+        # GET /api/v1/categories
+        # GET /api/v1/sources
+        # GET /api/v1/authors
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+        news-aggregator\database\database.sqlite
+        news-aggregator\docker-compose.yml

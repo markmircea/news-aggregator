@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 class CacheService
 {
-    private const CACHE_TTL = 3600; // 1 hour in seconds
+    private const CACHE_TTL = 3600;
     private const CACHE_PREFIX = 'articles:';
 
     public function getCachedArticles(string $cacheKey): mixed
