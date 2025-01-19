@@ -88,6 +88,7 @@ class ArticleController extends Controller
                 $query->where('title', 'like', "%{$search}%")
                       ->orWhere('description', 'like', "%{$search}%")
                       ->orWhere('source_name', 'like', "%{$search}%")
+                      ->orWhere('source_id', 'like', "%{$search}%")
                       ->orWhere('author', 'like', "%{$search}%")
                       ->orWhere('category', 'like', "%{$search}%")
                       ->orWhere('content', 'like', "%{$search}%");

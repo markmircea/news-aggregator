@@ -1,5 +1,7 @@
 Laravel v10 (Just because I like the kernal :) 
 
+Its using redis for caching and sqlite for DB make sure to run php artisan migrate if switching to a different DB
+
 first run the server
 - php artisan serve
 
@@ -12,7 +14,7 @@ start the scheduler with a cron job
 to get latest articles manually ->
 - php artisan articles:fetch-latest
 
-gets latest for last 24 hours, ignores duplicates, invalidates cache
+gets latest for last 24 hours (to account for timezones and late publications), ignores duplicates, invalidates cache
 
 to manually clear redis cache
 - php artisan articles:clear-cache

@@ -21,9 +21,9 @@ class GuardianService implements NewsServiceInterface
             $response = Http::get($this->baseUrl, [
                 'api-key' => $this->apiKey,
                 'show-fields' => 'all',
-                'page-size' => 50,
+                'page-size' => 200,
                 'order-by' => 'newest',
-                'from-date' => now()->subDay()->format('Y-m-d'),  //last 24 hours
+                'from-date' => now()->subDay()->format('Y-m-d'),
                 'to-date' => now()->format('Y-m-d')
             ]);
 

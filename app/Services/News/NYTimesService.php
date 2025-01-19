@@ -19,12 +19,11 @@ class NYTimesService implements NewsServiceInterface
     public function fetchArticles(): array
     {
         try {
-            $yesterday = Carbon::now()->subDay()->format('Ymd');
-
             $response = Http::get($this->searchBaseUrl, [
                 'api-key' => $this->apiKey,
-                'begin_date' => $yesterday,
+                'begin_date' => now()->subDay()->format('Ymd'),
                 'sort' => 'newest',
+                'page-size' => 100,
                 'fl' => 'web_url,headline,abstract,snippet,pub_date,news_desk,multimedia,byline,section_name'
             ]);
 

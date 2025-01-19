@@ -21,9 +21,7 @@ class NewsApiService implements NewsServiceInterface
             $response = Http::get($this->baseUrl, [
                 'apiKey' => $this->apiKey,
                 'language' => 'en',
-                'pageSize' => 50,
-                'from' => now()->subDay()->format('Y-m-d\TH:i:s\Z'),  // last 24
-                'to' => now()->format('Y-m-d\TH:i:s\Z')
+                'pageSize' => 100,
             ]);
 
             if (!$response->successful()) {
