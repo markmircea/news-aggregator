@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Redis;
 |
 */
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware(['throttle:60,1'])->group(function () {
     Route::get('/articles', [ArticleController::class, 'index']);
     Route::get('/articles/search', [ArticleController::class, 'search']);
     Route::get('/categories', [ArticleController::class, 'categories']);
