@@ -4,27 +4,83 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Services\CacheService;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 
 class ArticleController extends Controller
 {
+    private CacheService $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     public function index(Request $request)
     {
+        // Build cache key from request parameters
+        $filters = array_filter($request->only([
+            'source',
+            'category',
+            'author',
+            'from_date',
+            'to_date',
+            'per_page',
+            'page'
+        ]));
+
+        $cacheKey = 'filtered:' . $this->cacheService->buildFilterKey($filters);
+
+        // Try to get from cache first
+        if ($cached = $this->cacheService->getCachedArticles($cacheKey)) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $cached,
+                'from_cache' => true
+            ]);
+        }
+
+        // If not in cache, get from database
         $query = Article::query();
         $this->applyFilters($query, $request);
 
         $articles = $query->latest('published_at')
                          ->paginate($request->get('per_page', 15));
 
+        // Cache the results
+        $this->cacheService->cacheArticles($cacheKey, $articles);
+
         return response()->json([
             'status' => 'success',
-            'data' => $articles
+            'data' => $articles,
+            'from_cache' => false
         ]);
     }
 
     public function search(Request $request)
     {
+        $filters = array_filter($request->only([
+            'q',
+            'source',
+            'category',
+            'author',
+            'from_date',
+            'to_date',
+            'per_page',
+            'page'
+        ]));
+
+        $cacheKey = 'search:' . $this->cacheService->buildFilterKey($filters);
+
+        if ($cached = $this->cacheService->getCachedArticles($cacheKey)) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $cached,
+                'from_cache' => true
+            ]);
+        }
+
         $query = Article::query();
 
         if ($search = $request->get('q')) {
@@ -43,44 +99,86 @@ class ArticleController extends Controller
         $articles = $query->latest('published_at')
                          ->paginate($request->get('per_page', 15));
 
+        $this->cacheService->cacheArticles($cacheKey, $articles);
+
         return response()->json([
             'status' => 'success',
-            'data' => $articles
+            'data' => $articles,
+            'from_cache' => false
         ]);
     }
 
     public function categories()
     {
+        $cacheKey = 'categories';
+
+        if ($cached = $this->cacheService->getCachedArticles($cacheKey)) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $cached,
+                'from_cache' => true
+            ]);
+        }
+
         $categories = Article::distinct()
                            ->whereNotNull('category')
                            ->pluck('category');
 
+        $this->cacheService->cacheArticles($cacheKey, $categories);
+
         return response()->json([
             'status' => 'success',
-            'data' => $categories
+            'data' => $categories,
+            'from_cache' => false
         ]);
     }
 
     public function sources()
     {
+        $cacheKey = 'sources';
+
+        if ($cached = $this->cacheService->getCachedArticles($cacheKey)) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $cached,
+                'from_cache' => true
+            ]);
+        }
+
         $sources = Article::distinct()
                          ->pluck('source_name');
 
+        $this->cacheService->cacheArticles($cacheKey, $sources);
+
         return response()->json([
             'status' => 'success',
-            'data' => $sources
+            'data' => $sources,
+            'from_cache' => false
         ]);
     }
 
     public function authors()
     {
+        $cacheKey = 'authors';
+
+        if ($cached = $this->cacheService->getCachedArticles($cacheKey)) {
+            return response()->json([
+                'status' => 'success',
+                'data' => $cached,
+                'from_cache' => true
+            ]);
+        }
+
         $authors = Article::distinct()
                          ->whereNotNull('author')
                          ->pluck('author');
 
+        $this->cacheService->cacheArticles($cacheKey, $authors);
+
         return response()->json([
             'status' => 'success',
-            'data' => $authors
+            'data' => $authors,
+            'from_cache' => false
         ]);
     }
 

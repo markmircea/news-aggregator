@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Log;
 class ArticleAggregationService
 {
     private array $newsServices;
+    private CacheService $cacheService;
 
-    public function __construct(array $newsServices)
+    public function __construct(array $newsServices, CacheService $cacheService)
     {
         $this->newsServices = $newsServices;
+        $this->cacheService = $cacheService;
     }
 
     public function aggregateLatestArticles(): array
@@ -56,6 +58,8 @@ class ArticleAggregationService
 
             if ($created->wasRecentlyCreated) {
                 $stats['total_new']++;
+                // Invalidate relevant caches when new article is added
+                $this->invalidateRelevantCaches($created);
             }
         } catch (\Exception $e) {
             $stats['errors']++;
@@ -64,5 +68,15 @@ class ArticleAggregationService
                 'article' => $articleData
             ]);
         }
+    }
+
+    private function invalidateRelevantCaches(Article $article): void
+    {
+        // Invalidate filtered results containing this article's attributes
+        $this->cacheService->invalidateCache('filtered:*');
+        $this->cacheService->invalidateCache('search:*');
+        $this->cacheService->invalidateCache('categories');
+        $this->cacheService->invalidateCache('sources');
+        $this->cacheService->invalidateCache('authors');
     }
 }

@@ -9,7 +9,6 @@ use Carbon\Carbon;
 class NYTimesService implements NewsServiceInterface
 {
     private string $apiKey;
-    private string $apiSecret;
     private string $topStoriesBaseUrl = 'https://api.nytimes.com/svc/topstories/v2';
     private string $searchBaseUrl = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
     private array $sections = ['home', 'technology', 'science', 'world', 'business'];
@@ -17,7 +16,6 @@ class NYTimesService implements NewsServiceInterface
     public function __construct()
     {
         $this->apiKey = config('services.nytimes.api_key');
-        $this->apiSecret = config('services.nytimes.secret');
     }
 
     public function fetchArticles(): array
