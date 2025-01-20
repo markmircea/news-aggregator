@@ -50,6 +50,7 @@ class GuardianService implements NewsServiceInterface
                 'description' => $article['fields']['trailText'] ?? null,
                 'content' => $article['fields']['bodyText'] ?? null,
                 'source_name' => 'The Guardian',
+                'source_id' => 'The Guardian',
                 'author' => $article['fields']['byline'] ?? null,
                 'url' => $article['webUrl'],
                 'image_url' => $article['fields']['thumbnail'] ?? null,

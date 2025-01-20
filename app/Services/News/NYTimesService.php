@@ -4,7 +4,6 @@ namespace App\Services\News;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 
 class NYTimesService implements NewsServiceInterface
 {
@@ -63,6 +62,7 @@ class NYTimesService implements NewsServiceInterface
                 'description' => $article['abstract'],
                 'content' => $article['snippet'] ?? null,
                 'source_name' => 'The New York Times',
+                'source_id' => 'The New York Times',
                 'author' => $article['byline']['original'] ?? null,
                 'url' => $article['web_url'],
                 'image_url' => $imageUrl,

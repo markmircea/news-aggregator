@@ -1,6 +1,4 @@
 
-
-
 Laravel v10 (Just because I like the kernal :) 
 
 Its using redis for caching and sqlite for DB make sure to run php artisan migrate if switching to a different DB
@@ -21,7 +19,6 @@ gets latest for last 24 hours (to account for timezones and late publications), 
 
 to manually clear redis cache
 - php artisan articles:clear-cache
-
 
 
 a. Get All Articles:
@@ -51,7 +48,6 @@ URL: http://127.0.0.1:8000/api/v1/authors
 Example with filters (when using authors aas a filter, use the key 'author', sane for the rest, drop the 'S'):
 Method: GET
 URL: http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology&from_date=2024-01-16&to_date=2025-01-17&per_page=10
-
 
 
 MODIFIED FILES FROM ORIGINAL

@@ -13,10 +13,10 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
             $table->text('content')->nullable();
-            $table->string('source_name');  // Guardian/NewsAPI source name
-            $table->string('source_id')->nullable();  // For NewsAPI source ID
+            $table->string('source_name');
+            $table->string('source_id')->nullable();
             $table->string('author')->nullable();
-            $table->string('url')->unique();  // Using as unique identifier
+            $table->string('url')->unique();
             $table->string('image_url')->nullable();
             $table->string('category')->nullable();
             $table->timestamp('published_at');
