@@ -8,7 +8,7 @@
 - Run `php artisan migrate` if switching to a different database
 - API middleware throttle enabled (60 requests/min)
 
-### Key Directories
+### Key Files
 - `news-aggregator/database/database.sqlite`
 - `news-aggregator/docker-compose.yml`
 
@@ -57,7 +57,7 @@ Sources: GET /api/v1/sources
 Authors: GET /api/v1/authors
 
 Advanced Filtering Example
-CopyGET http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology&from_date=2024-01-16&to_date=2025-01-17&per_page=10
+GET http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology&from_date=2024-01-16&to_date=2025-01-17&per_page=10
 Note: When using authors as a filter, use the key 'author'. Same applies to other filters (drop the 's'). NewsAPI does not have categories.
 Project Structure
 Environment Configuration
