@@ -2,61 +2,52 @@
 
 namespace App\Services\News;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-
-class GuardianService implements NewsServiceInterface
+class GuardianService extends BaseNewsService
 {
-    private string $apiKey;
-    private string $baseUrl = 'https://content.guardianapis.com/search';
-
-    public function __construct()
+    protected function getApiKey(): string
     {
-        $this->apiKey = config('services.guardian.api_key');
+        return config('services.guardian.api_key');
     }
 
-    public function fetchArticles(): array
+    protected function getBaseUrl(): string
     {
-        try {
-            $response = Http::get($this->baseUrl, [
-                'api-key' => $this->apiKey,
-                'show-fields' => 'all',
-                'page-size' => 200,
-                'order-by' => 'newest',
-                'from-date' => now()->subDay()->format('Y-m-d'),
-                'to-date' => now()->format('Y-m-d')
-            ]);
-
-            if (!$response->successful()) {
-                Log::error('Guardian API error', [
-                    'status' => $response->status(),
-                    'body' => $response->json()
-                ]);
-                return [];
-            }
-
-            return $this->formatArticles($response->json()['response']['results']);
-        } catch (\Exception $e) {
-            Log::error('Guardian API exception', ['message' => $e->getMessage()]);
-            return [];
-        }
+        return 'https://content.guardianapis.com/search';
     }
 
-    private function formatArticles(array $articles): array
+    protected function getServiceName(): string
     {
-        return array_map(function ($article) {
-            return [
-                'title' => $article['webTitle'],
-                'description' => $article['fields']['trailText'] ?? null,
-                'content' => $article['fields']['bodyText'] ?? null,
-                'source_name' => 'The Guardian',
-                'source_id' => 'The Guardian',
-                'author' => $article['fields']['byline'] ?? null,
-                'url' => $article['webUrl'],
-                'image_url' => $article['fields']['thumbnail'] ?? null,
-                'category' => $article['sectionName'],
-                'published_at' => $article['webPublicationDate']
-            ];
-        }, $articles);
+        return 'The Guardian';
+    }
+
+    protected function getRequestParams(): array
+    {
+        return [
+            'api-key' => $this->apiKey,
+            'show-fields' => 'all',
+            'page-size' => 200,
+            'order-by' => 'newest',
+            'from-date' => now()->subDay()->format('Y-m-d'),
+            'to-date' => now()->format('Y-m-d')
+        ];
+    }
+
+    protected function extractArticlesFromResponse(array $response): array
+    {
+        return $response['response']['results'];
+    }
+
+    protected function extractField(array $article, string $field, $default = null): mixed
+    {
+        return match($field) {
+            'title' => $article['webTitle'],
+            'description' => $article['fields']['trailText'] ?? $default,
+            'content' => $article['fields']['bodyText'] ?? $default,
+            'author' => $article['fields']['byline'] ?? $default,
+            'url' => $article['webUrl'],
+            'image_url' => $article['fields']['thumbnail'] ?? $default,
+            'category' => $article['sectionName'],
+            'published_at' => $article['webPublicationDate'],
+            default => $default
+        };
     }
 }

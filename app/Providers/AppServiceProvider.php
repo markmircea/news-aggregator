@@ -4,10 +4,10 @@ namespace App\Providers;
 
 use App\Services\ArticleAggregationService;
 use App\Services\CacheService;
-use App\Services\News\GuardianService;
-use App\Services\News\NewsApiService;
-use App\Services\News\NYTimesService;
+use App\Services\News\NewsServiceCollection;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Log;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,17 +16,22 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(CacheService::class, function ($app) {
-            return new CacheService();
-        });
+        try {
+            $this->app->singleton(CacheService::class, function ($app) {
+                return new CacheService();
+            });
 
-        $this->app->singleton(ArticleAggregationService::class, function ($app) {
-            return new ArticleAggregationService([
-                new GuardianService(),
-                new NewsApiService(),
-                new NYTimesService()
-            ], $app->make(CacheService::class));
-        });
+            $this->app->singleton(ArticleAggregationService::class, function ($app) {
+                return new ArticleAggregationService(
+                    $app->make(NewsServiceCollection::class),
+                    $app->make(CacheService::class)
+                );
+            });
+
+        } catch (\Exception $e) {
+            Log::error('Service registration failed', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
     /**

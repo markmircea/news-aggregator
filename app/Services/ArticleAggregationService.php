@@ -3,15 +3,18 @@
 namespace App\Services;
 
 use App\Models\Article;
+use App\Services\News\NewsServiceCollection;
 use Illuminate\Support\Facades\Log;
 
 class ArticleAggregationService
 {
-    private array $newsServices;
+    private NewsServiceCollection $newsServices;
     private CacheService $cacheService;
 
-    public function __construct(array $newsServices, CacheService $cacheService)
-    {
+    public function __construct(
+        NewsServiceCollection $newsServices,
+        CacheService $cacheService
+    ) {
         $this->newsServices = $newsServices;
         $this->cacheService = $cacheService;
     }
@@ -25,7 +28,7 @@ class ArticleAggregationService
             'database_total' => 0
         ];
 
-        foreach ($this->newsServices as $service) {
+        foreach ($this->newsServices->getServices() as $service) {
             try {
                 $articles = $service->fetchArticles();
                 $stats['total_fetched'] += count($articles);
@@ -42,7 +45,6 @@ class ArticleAggregationService
             }
         }
 
-        // Get total count from database
         $stats['database_total'] = Article::count();
 
         return $stats;
@@ -58,7 +60,6 @@ class ArticleAggregationService
 
             if ($created->wasRecentlyCreated) {
                 $stats['total_new']++;
-                // Invalidate relevant caches when new article is added
                 $this->invalidateRelevantCaches($created);
             }
         } catch (\Exception $e) {
@@ -72,7 +73,6 @@ class ArticleAggregationService
 
     private function invalidateRelevantCaches(Article $article): void
     {
-        // Invalidate filtered results containing this article's attributes
         $this->cacheService->invalidateCache('filtered:*');
         $this->cacheService->invalidateCache('search:*');
         $this->cacheService->invalidateCache('categories');

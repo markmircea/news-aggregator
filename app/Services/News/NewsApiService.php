@@ -2,58 +2,50 @@
 
 namespace App\Services\News;
 
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
-
-class NewsApiService implements NewsServiceInterface
+class NewsApiService extends BaseNewsService
 {
-    private string $apiKey;
-    private string $baseUrl = 'https://newsapi.org/v2/top-headlines';
-
-    public function __construct()
+    protected function getApiKey(): string
     {
-        $this->apiKey = config('services.newsapi.api_key');
+        return config('services.newsapi.api_key');
     }
 
-    public function fetchArticles(): array
+    protected function getBaseUrl(): string
     {
-        try {
-            $response = Http::get($this->baseUrl, [
-                'apiKey' => $this->apiKey,
-                'language' => 'en',
-                'pageSize' => 100,
-            ]);
-
-            if (!$response->successful()) {
-                Log::error('NewsAPI error', [
-                    'status' => $response->status(),
-                    'body' => $response->json()
-                ]);
-                return [];
-            }
-
-            return $this->formatArticles($response->json()['articles']);
-        } catch (\Exception $e) {
-            Log::error('NewsAPI exception', ['message' => $e->getMessage()]);
-            return [];
-        }
+        return 'https://newsapi.org/v2/top-headlines';
     }
 
-    private function formatArticles(array $articles): array
+    protected function getServiceName(): string
     {
-        return array_map(function ($article) {
-            return [
-                'title' => $article['title'],
-                'description' => $article['description'],
-                'content' => $article['content'],
-                'source_name' => 'NewsAPI',
-                'source_id' => $article['source']['name'] ?? 'NewsAPI',
-                'author' => $article['author'],
-                'url' => $article['url'],
-                'image_url' => $article['urlToImage'] ?? null,
-                'category' => null, // NewsAPI top-headlines doesn't provide category
-                'published_at' => $article['publishedAt']
-            ];
-        }, $articles);
+        return 'NewsAPI';
+    }
+
+    protected function getRequestParams(): array
+    {
+        return [
+            'apiKey' => $this->apiKey,
+            'language' => 'en',
+            'pageSize' => 100,
+        ];
+    }
+
+    protected function extractArticlesFromResponse(array $response): array
+    {
+        return $response['articles'];
+    }
+
+    protected function extractField(array $article, string $field, $default = null): mixed
+    {
+        return match($field) {
+            'title' => $article['title'],
+            'description' => $article['description'],
+            'content' => $article['content'],
+            'source_id' => $article['source']['name'] ?? $default,
+            'author' => $article['author'],
+            'url' => $article['url'],
+            'image_url' => $article['urlToImage'] ?? $default,
+            'category' => $default, // NewsAPI doesn't provide category
+            'published_at' => $article['publishedAt'],
+            default => $default
+        };
     }
 }

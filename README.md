@@ -162,7 +162,7 @@ URL: http://127.0.0.1:8000/api/v1/authors
 
 Example with filters (when using authors aas a filter, use the key 'author', sane for the rest, drop the 'S'):
 Method: GET
-URL: http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology&from_date=2024-01-16&to_date=2025-01-17&per_page=10
+URL: http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology&from_date=2024-01-16&to_date=2025-01-30&per_page=10
 
 
 MODIFIED FILES FROM ORIGINAL
@@ -202,14 +202,26 @@ news-aggregator/
 │   │       # Defines fillable fields and relationships
 │   │
 │   ├── Providers/
-│   │   └── AppServiceProvider.php
-│   │       # Registers news services in the Laravel container
-│   │       # Configures service dependencies
+│   │       |
+│   │       ├── NewsServiceProvider.php
+│   │       | # Creates a singleton instance of NewsServiceCollection to ensure we have only one instance of the collection throughout the application
+│   │       |
+│   │       |
+|   |       └── AppServiceProvider.php
+│   │       # Registers news services in the Laravel container Injects dependencies: NewsServiceCollection (managed by NewsServiceProvider) CacheService (registered above)
+│   │   
+│   │       
+│   │       
 │   │
 │   └── Services/
 │       ├── News/
 │       │   ├── NewsServiceInterface.php
 │       │   │   # Interface that defines how news services should work
+│       │   │
+│       │   ├── NewsServiceCollection.php
+│       │   │   # Used by the ArticleAggregationService to iterate through all news services
+│       │   ├── BaseNewsService.php
+│       │   │   # Abstract for news services
 │       │   │
 │       │   ├── GuardianService.php
 │       │   │   # Fetches articles from The Guardian API
@@ -222,7 +234,7 @@ news-aggregator/
 │       │
 │       ├── ArticleAggregationService.php
 │       |    # Coordinates fetching from all news sources
-│       |    # Handles storing articles and avoiding duplicates
+│       |    # Handles storing articles and avoiding duplicates & cache management
 |       │
 │       └── CacheService.php
 │           # Caches the requests that are made for 24 hours so any subsequent requests go through redis
@@ -233,6 +245,7 @@ news-aggregator/
 │
 ├── config/
 |   |
+|   ├── app.php # added NewsServiceProvider
 |   |
 |   ├── database.php # added redis caching
 │   | 
