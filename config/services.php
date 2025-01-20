@@ -33,15 +33,18 @@ return [
 
     'guardian' => [
         'api_key' => env('GUARDIAN_API_KEY'),
+        'api_endpoint' =>  'https://content.guardianapis.com/search'
     ],
 
     'newsapi' => [
         'api_key' => env('NEWSAPI_KEY'),
+        'api_endpoint' =>  'https://newsapi.org/v2/top-headlines'
     ],
 
     'nytimes' => [
     'api_key' => env('NYTIMES_API_KEY'),
-    'api_secret' => env('NYTIMES_API_SECRET_KEY')
+    'api_secret' => env('NYTIMES_API_SECRET_KEY'),
+    'api_endpoint' =>  'https://api.nytimes.com/svc/search/v2/articlesearch.json'
     ],
 
 ];

@@ -2,6 +2,9 @@
 
 namespace App\Services\News;
 
+use App\Services\News\Interfaces\NewsServiceInterface;
+
+
 class NewsServiceCollection
 {
     private array $services = [];

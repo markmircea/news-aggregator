@@ -11,7 +11,7 @@ class GuardianService extends BaseNewsService
 
     protected function getBaseUrl(): string
     {
-        return 'https://content.guardianapis.com/search';
+        return config('services.guardian.api_endpoint');
     }
 
     protected function getServiceName(): string

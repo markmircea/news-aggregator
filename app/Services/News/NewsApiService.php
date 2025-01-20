@@ -11,7 +11,7 @@ class NewsApiService extends BaseNewsService
 
     protected function getBaseUrl(): string
     {
-        return 'https://newsapi.org/v2/top-headlines';
+        return config('services.newsapi.api_endpoint');
     }
 
     protected function getServiceName(): string

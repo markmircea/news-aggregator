@@ -5,9 +5,10 @@ namespace App\Providers;
 use App\Services\News\GuardianService;
 use App\Services\News\NewsApiService;
 use App\Services\News\NewsServiceCollection;
-use App\Services\News\NewsServiceInterface;
+use App\Services\News\Interfaces\NewsServiceInterface;
 use App\Services\News\NYTimesService;
 use Illuminate\Support\ServiceProvider;
+
 
 class NewsServiceProvider extends ServiceProvider
 {

@@ -11,7 +11,7 @@ class NYTimesService extends BaseNewsService
 
     protected function getBaseUrl(): string
     {
-        return 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
+        return config('services.nytimes.api_endpoint');
     }
 
     protected function getServiceName(): string

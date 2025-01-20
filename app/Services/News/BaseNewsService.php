@@ -4,6 +4,7 @@ namespace App\Services\News;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Services\News\Interfaces\NewsServiceInterface;
 
 abstract class BaseNewsService implements NewsServiceInterface
 {
