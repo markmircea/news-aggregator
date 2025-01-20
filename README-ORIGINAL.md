@@ -31,7 +31,7 @@ URL: http://127.0.0.1:8000/api/v1/articles/search?q=technology
 
 c. Filtered Articles:
 Method: GET
-URL: http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology
+URL: http://127.0.0.1:8000/api/v1/articles?source=The%20Guardian&category=Technology
 
 d. Get Categories:
 Method: GET
@@ -47,7 +47,7 @@ URL: http://127.0.0.1:8000/api/v1/authors
 
 Example with filters (when using authors aas a filter, use the key 'author', sane for the rest, drop the 'S'):
 Method: GET
-URL: http://127.0.0.1:8000/api/v1/articles?source=The Guardian&category=Technology&from_date=2024-01-16&to_date=2025-01-17&per_page=10
+URL: http://127.0.0.1:8000/api/v1/articles?source=The%20Guardian&category=Technology&from_date=2024-01-16&to_date=2025-01-17&per_page=10
 
 
 MODIFIED FILES FROM ORIGINAL
